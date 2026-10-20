@@ -21,6 +21,7 @@ import { BookmarkFeedItem } from './BookmarkFeedItem'
 import { Flex } from './Flex'
 import { headingVariants } from './Heading'
 import { Loader } from './Loader'
+import { PageToolbar } from './PageToolbar'
 import { ShareDialog } from './ShareDialog'
 import { SidebarLink } from './SidebarLink'
 import { TootFeedItem } from './TootFeedItem'
@@ -118,8 +119,9 @@ export const Feed = memo(
               {icon}
               {title}
             </h3>
+            {/* The page's buttons live in the toolbar under the top bar */}
             {showFeedOptions || shareConfig ? (
-              <Flex gap="3xs">
+              <PageToolbar>
                 {showFeedOptions ? (
                   <>
                     <Button
@@ -179,7 +181,7 @@ export const Feed = memo(
                     name={shareConfig.name}
                   />
                 ) : null}
-              </Flex>
+              </PageToolbar>
             ) : null}
           </Flex>
           {subNav ? (
