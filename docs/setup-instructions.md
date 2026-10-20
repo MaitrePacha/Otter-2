@@ -4,7 +4,7 @@ This guide covers the current Otter stack: Cloudflare Workers, Neon Postgres, Be
 
 ## Prerequisites
 
-- Node.js 20+
+- Node.js 24+
 - pnpm
 - A Neon account
 - A Cloudflare account
@@ -88,7 +88,7 @@ wrangler secret put WEBHOOK_SECRET
 Then deploy:
 
 ```bash
-pnpm deploy
+pnpm run deploy
 ```
 
 ## 7. Optional Raycast OAuth setup
