@@ -1,0 +1,1 @@
+ALTER TABLE "profiles" ADD COLUMN IF NOT EXISTS "settings_hidden_sections" text[] DEFAULT ARRAY[]::text[] NOT NULL;
