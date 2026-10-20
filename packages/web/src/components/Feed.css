@@ -72,3 +72,38 @@
   gap: var(--space-3xs);
   font-size: var(--step--2);
 }
+
+.feed-item.is-selected {
+  outline: 2px solid var(--accent9);
+  outline-offset: -2px;
+}
+
+/* Round, like the IconControl check badge */
+.feed-item-checkbox {
+  --check: url("data:image/svg+xml, %3Csvg%20xmlns='http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width='192'%20height='192'%20viewBox='0%200%20256%20256'%3E%3Cpolyline%20points='216%2072.005%20104%20184%2048%20128.005'%20fill='none'%20stroke='white'%20stroke-linecap='round'%20stroke-linejoin='round'%20stroke-width='32'%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E");
+  appearance: none;
+  flex-shrink: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-top: var(--space-3xs);
+  border: 2px solid var(--theme7);
+  border-radius: 50%;
+  background-color: var(--background);
+  background-size: 12px;
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+  cursor: pointer;
+
+  /* Hover previews the check; touch screens skip it so it never sticks */
+  @media (hover: hover) {
+    &:hover {
+      background-image: var(--check);
+    }
+  }
+
+  &:checked {
+    border-color: var(--accent9);
+    background-color: var(--accent9);
+    background-image: var(--check);
+  }
+}
