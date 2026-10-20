@@ -138,10 +138,11 @@ export const FeedItemActions = ({
     navigate({ to: urlJoin('/bookmark', id) })
   }
 
+  // A click on the title opens a new tab, so the menu offers this tab
   const handleNavigateToBookmark = () => {
     if (url) {
       handleClickRegister(id)
-      window.open(url, '_blank')
+      window.location.assign(url)
     }
   }
 
@@ -179,7 +180,7 @@ export const FeedItemActions = ({
                     handleNavigateToBookmark()
                   }}
                 >
-                  Open in new tab
+                  Open in this tab
                   <div className="DropdownMenuItem-rightSlot">
                     <ArrowSquareOutIcon weight="duotone" />
                   </div>
