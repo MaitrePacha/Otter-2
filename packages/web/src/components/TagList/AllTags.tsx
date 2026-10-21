@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Button } from '@/components/Button'
 import { CONTENT } from '@/constants'
 import type { MetaTag } from '@/utils/fetching/meta'
@@ -16,8 +16,16 @@ interface AllTagsProps {
   tags?: MetaTag[]
 }
 
-export const AllTags = ({ tags }: AllTagsProps) => {
+// `collection:tag` tags are listed under Collections instead. Same rule as
+// the server's collections: a colon after at least one character.
+const isCollectionTag = (tag: string | null) => (tag?.indexOf(':') ?? -1) > 0
+
+export const AllTags = ({ tags: allTags }: AllTagsProps) => {
   const { profile, handleUpdateUISettings } = useUser()
+  const tags = useMemo(
+    () => allTags?.filter(({ tag }) => !isCollectionTag(tag)),
+    [allTags],
+  )
   const [theTags, setTheTags] = useState<MetaTag[] | undefined>(tags)
   const topTagsLimit = profile?.settings_top_tags_count
 
