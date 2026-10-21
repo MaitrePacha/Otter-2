@@ -105,13 +105,17 @@ const actionAPI = browserAPI.action ?? browserAPI.browserAction
  */
 const apiSave = async (kind, url, title) => {
   const { otterInstanceUrl } = await getStorageItems()
-  const endpoint =
-    kind === 'read-later'
-      ? urlJoin(otterInstanceUrl, 'api', 'reader', 'items')
-      : urlJoin(otterInstanceUrl, 'api', 'new')
+  const endpoint = urlJoin(otterInstanceUrl, 'api', 'new')
   // /api/new scrapes title, description, image and type (article, video…)
-  // and matches existing tags. /api/reader/items extracts the article.
-  const body = kind === 'read-later' ? { url } : [{ scrape: true, title, url }]
+  // and matches existing tags. "read-later" also puts it on the See later list.
+  const body = [
+    {
+      scrape: true,
+      title,
+      url,
+      ...(kind === 'read-later' && { see_later: true }),
+    },
+  ]
 
   const response = await fetch(endpoint, {
     body: JSON.stringify(body),
@@ -191,8 +195,8 @@ const save = async (kind, url, title, force = false) => {
     const saved = await apiSave(kind, url, title)
     flashBadge('✓')
     const { otterInstanceUrl } = await getStorageItems()
-    // /api/new returns the inserted rows; the reader endpoint has no web page.
-    const id = kind === 'quick-save' ? saved?.[0]?.id : undefined
+    // /api/new returns the inserted rows
+    const id = saved?.[0]?.id
     return {
       link: id ? urlJoin(otterInstanceUrl, 'bookmark', id) : undefined,
       ok: true,
@@ -291,7 +295,7 @@ browserAPI.webNavigation?.onCompleted.addListener(async (details) => {
  */
 const contextMenuItems = [
   { id: 'otter-context-quick-save', title: 'Quick save to Otter' },
-  { id: 'otter-context-read-later', title: 'Read later in Otter' },
+  { id: 'otter-context-read-later', title: 'See later in Otter' },
   { id: 'otter-context-save', title: 'Save to Otter with details…' },
 ]
 

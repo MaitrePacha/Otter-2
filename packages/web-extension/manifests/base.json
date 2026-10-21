@@ -15,7 +15,7 @@
       }
     },
     "read-later": {
-      "description": "Read later in Otter"
+      "description": "See later in Otter"
     }
   },
   "content_scripts": [
