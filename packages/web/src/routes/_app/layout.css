@@ -128,7 +128,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-3xs);
-  padding: var(--space-3xs) var(--space-2xs);
+  padding: var(--space-3xs) var(--space-2xs) var(--space-2xs);
   border-bottom: 1px solid var(--border);
   background-color: var(--background);
 
@@ -148,4 +148,29 @@
   align-items: center;
   justify-content: center;
   gap: var(--space-3xs);
+
+  /* Buttons look like the settings tabs (.link-sidebar): same weight, hover
+     and, when pressed, the active tab colours */
+  .button-ghost {
+    gap: var(--space-3xs);
+    padding-inline: var(--space-2xs);
+    border: 0;
+    border-radius: var(--radii-m);
+    color: var(--theme10);
+    font-size: var(--step--2);
+    font-weight: 500;
+    letter-spacing: normal;
+
+    &:hover {
+      border: 0;
+      color: var(--theme11);
+      background-color: var(--theme5);
+    }
+
+    &[aria-pressed="true"] {
+      border: 0;
+      color: var(--accent11);
+      background-color: var(--accent6);
+    }
+  }
 }
