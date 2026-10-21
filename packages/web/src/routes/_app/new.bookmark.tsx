@@ -9,6 +9,7 @@ import { Suspense } from 'react'
 import { BookmarkForm } from '@/components/BookmarkForm'
 import { Loader } from '@/components/Loader'
 import { createTitle } from '@/constants'
+import { extractUrl } from '@/utils/extractUrl'
 import { getMetaOptions } from '@/utils/fetching/meta'
 
 export const Route = createFileRoute('/_app/new/bookmark')({
@@ -31,13 +32,17 @@ export const Route = createFileRoute('/_app/new/bookmark')({
     bookmarklet: search.bookmarklet,
     url: search.url,
   }),
+  // Android's share menu (manifest.json share_target) sends title, text and
+  // url; many apps leave url empty and put the link in the text
   validateSearch: (search: {
     url?: string
     bookmarklet?: string
+    text?: string
+    title?: string
   }): { url?: string; bookmarklet?: string } => {
     return {
       bookmarklet: search.bookmarklet,
-      url: search.url,
+      url: search.url || extractUrl(search.text) || extractUrl(search.title),
     }
   },
 })

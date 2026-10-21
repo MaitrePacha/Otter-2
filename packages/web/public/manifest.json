@@ -10,6 +10,15 @@
     }
   ],
   "name": "Otter",
+  "share_target": {
+    "action": "/new/bookmark",
+    "method": "GET",
+    "params": {
+      "text": "text",
+      "title": "title",
+      "url": "url"
+    }
+  },
   "short_name": "Otter",
-  "start_url": "https://otter.zander.wtf"
+  "start_url": "/"
 }
