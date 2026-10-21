@@ -29,6 +29,7 @@ export interface BaseBookmark {
   modified_at: string
   note: string | null
   public: boolean
+  see_later: boolean
   star: boolean
   status: BookmarkStatus
   tags: string[] | null
@@ -113,6 +114,7 @@ export interface BookmarkFormValues
 /** Sidebar sections that can be hidden from Settings > Preferences */
 export const SIDEBAR_SECTIONS = [
   'dashboard',
+  'seeLater',
   'public',
   'stars',
   'top',

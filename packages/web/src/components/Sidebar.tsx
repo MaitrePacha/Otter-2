@@ -3,6 +3,7 @@ import {
   ArrowFatLinesUpIcon,
   EyeIcon,
   GaugeIcon,
+  HourglassMediumIcon,
   ListBulletsIcon,
   NotebookIcon,
   RocketLaunchIcon,
@@ -24,6 +25,7 @@ import {
   ROUTE_JOURNAL,
   ROUTE_MEDIA,
   ROUTE_PUBLIC,
+  ROUTE_SEE_LATER,
   ROUTE_SETTINGS_ACCOUNT,
   ROUTE_STARS,
   ROUTE_STATS,
@@ -91,6 +93,21 @@ export const Sidebar = ({ version }: SidebarProps) => {
             <ListBulletsIcon aria-label="All" size={18} weight="duotone" />
             {CONTENT.feedNav}
           </SidebarLink>
+          {isShown('seeLater') ? (
+            <SidebarLink
+              href={ROUTE_SEE_LATER}
+              // @ts-expect-error How do I type search params?
+              search={{ see_later: true }}
+              count={dbMeta?.seeLater}
+            >
+              <HourglassMediumIcon
+                aria-label="See later"
+                size={18}
+                weight="duotone"
+              />
+              {CONTENT.seeLaterNav}
+            </SidebarLink>
+          ) : null}
           {isShown('public') ? (
             <SidebarLink
               href={ROUTE_PUBLIC}

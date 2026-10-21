@@ -60,7 +60,7 @@ const run = async (type) => {
     document.getElementById('bookmark').hidden = true
     showLink('saved', result.link)
   } else if (result?.ok) {
-    setStatus(type === 'read-later' ? 'Saved to Read later.' : 'Saved.')
+    setStatus(type === 'read-later' ? 'Saved to See later.' : 'Saved.')
     setTimeout(() => window.close(), 900)
   } else if (type === 'bookmark') {
     window.close()

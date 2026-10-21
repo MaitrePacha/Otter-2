@@ -1,12 +1,18 @@
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { FeedSimple } from '@/components/FeedSimple'
-import { createTitle } from '@/constants'
+import { CONTENT, createTitle } from '@/constants'
 import type { Bookmark, Toot } from '@/types/db'
 import { getBookmarksOptions } from '@/utils/fetching/bookmarks'
 import { getDashboardOptions } from '@/utils/fetching/dashboard'
 import { getTootsOptions } from '@/utils/fetching/toots'
 import { randomElements } from '@/utils/random-array-elements'
+
+const SEE_LATER_PARAMS = {
+  limit: 4,
+  see_later: true,
+  status: 'active',
+} as const
 
 export const Route = createFileRoute('/_app/dashboard')({
   component: Index,
@@ -20,6 +26,9 @@ export const Route = createFileRoute('/_app/dashboard')({
   loader: async (opts) => {
     const dashboard = await opts.context.queryClient.ensureQueryData(
       getDashboardOptions(),
+    )
+    const seeLaterBookmarks = await opts.context.queryClient.ensureQueryData(
+      getBookmarksOptions(SEE_LATER_PARAMS),
     )
     const followUpBookmarks = await opts.context.queryClient.ensureQueryData(
       getBookmarksOptions({
@@ -36,13 +45,16 @@ export const Route = createFileRoute('/_app/dashboard')({
         },
       }),
     )
-    const response = { dashboard, followUpBookmarks, toots }
+    const response = { dashboard, followUpBookmarks, seeLaterBookmarks, toots }
     return response
   },
 })
 
 function Index() {
   const { data: dashboard } = useSuspenseQuery(getDashboardOptions())
+  const { data: seeLaterBookmarks } = useSuspenseQuery(
+    getBookmarksOptions(SEE_LATER_PARAMS),
+  )
   const { data: followUpBookmarks } = useSuspenseQuery(
     getBookmarksOptions({
       limit: 4,
@@ -61,6 +73,12 @@ function Index() {
 
   return (
     <div className="flex flex-col gap-l">
+      {seeLaterBookmarks?.data?.length ? (
+        <FeedSimple
+          items={seeLaterBookmarks.data as Bookmark[]}
+          title={CONTENT.seeLaterTitle}
+        />
+      ) : null}
       {dashboard?.recent?.length ? (
         <FeedSimple items={dashboard.recent} title="Recent" />
       ) : null}

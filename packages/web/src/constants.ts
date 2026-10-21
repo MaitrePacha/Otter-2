@@ -47,6 +47,8 @@ export const CONTENT = {
   scrapeThisUrl: 'Scrape this URL',
   searchInputPlaceholder: 'Search',
   searchTitle: 'Search',
+  seeLaterNav: 'See later',
+  seeLaterTitle: 'See later',
   settingsNav: 'Account & integrations',
   signInTitle: 'Sign in',
   signOutNav: 'Sign out',
@@ -84,6 +86,7 @@ export const ROUTE_SIGNIN = '/signin'
 export const ROUTE_NEW_BOOKMARK = '/new/bookmark'
 export const ROUTE_NEW_MEDIA = '/new/media'
 export const ROUTE_NEW_BOOKMARK_CONFIRMATION = '/new/bookmark/confirmation'
+export const ROUTE_SEE_LATER = '/see-later'
 export const ROUTE_STARS = '/stars'
 export const ROUTE_PUBLIC = '/public'
 export const ROUTE_RECENT = '/recent'

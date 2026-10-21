@@ -21,6 +21,7 @@ import { Route as AppTrashRouteImport } from './routes/_app/trash'
 import { Route as AppTopRouteImport } from './routes/_app/top'
 import { Route as AppTootsRouteImport } from './routes/_app/toots'
 import { Route as AppStarsRouteImport } from './routes/_app/stars'
+import { Route as AppSeeLaterRouteImport } from './routes/_app/see-later'
 import { Route as AppSearchRouteImport } from './routes/_app/search'
 import { Route as AppPublicRouteImport } from './routes/_app/public'
 import { Route as AppMediaRouteImport } from './routes/_app/media'
@@ -104,6 +105,11 @@ const AppTootsRoute = AppTootsRouteImport.update({
 const AppStarsRoute = AppStarsRouteImport.update({
   id: '/stars',
   path: '/stars',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppSeeLaterRoute = AppSeeLaterRouteImport.update({
+  id: '/see-later',
+  path: '/see-later',
   getParentRoute: () => AppRouteRoute,
 } as any)
 const AppSearchRoute = AppSearchRouteImport.update({
@@ -252,6 +258,7 @@ export interface FileRoutesByFullPath {
   '/media': typeof AppMediaRoute
   '/public': typeof AppPublicRoute
   '/search': typeof AppSearchRoute
+  '/see-later': typeof AppSeeLaterRoute
   '/stars': typeof AppStarsRoute
   '/toots': typeof AppTootsRoute
   '/top': typeof AppTopRoute
@@ -290,6 +297,7 @@ export interface FileRoutesByTo {
   '/media': typeof AppMediaRoute
   '/public': typeof AppPublicRoute
   '/search': typeof AppSearchRoute
+  '/see-later': typeof AppSeeLaterRoute
   '/stars': typeof AppStarsRoute
   '/toots': typeof AppTootsRoute
   '/top': typeof AppTopRoute
@@ -330,6 +338,7 @@ export interface FileRoutesById {
   '/_app/media': typeof AppMediaRoute
   '/_app/public': typeof AppPublicRoute
   '/_app/search': typeof AppSearchRoute
+  '/_app/see-later': typeof AppSeeLaterRoute
   '/_app/stars': typeof AppStarsRoute
   '/_app/toots': typeof AppTootsRoute
   '/_app/top': typeof AppTopRoute
@@ -371,6 +380,7 @@ export interface FileRouteTypes {
     | '/media'
     | '/public'
     | '/search'
+    | '/see-later'
     | '/stars'
     | '/toots'
     | '/top'
@@ -409,6 +419,7 @@ export interface FileRouteTypes {
     | '/media'
     | '/public'
     | '/search'
+    | '/see-later'
     | '/stars'
     | '/toots'
     | '/top'
@@ -448,6 +459,7 @@ export interface FileRouteTypes {
     | '/_app/media'
     | '/_app/public'
     | '/_app/search'
+    | '/_app/see-later'
     | '/_app/stars'
     | '/_app/toots'
     | '/_app/top'
@@ -568,6 +580,13 @@ declare module '@tanstack/react-router' {
       path: '/stars'
       fullPath: '/stars'
       preLoaderRoute: typeof AppStarsRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_app/see-later': {
+      id: '/_app/see-later'
+      path: '/see-later'
+      fullPath: '/see-later'
+      preLoaderRoute: typeof AppSeeLaterRouteImport
       parentRoute: typeof AppRouteRoute
     }
     '/_app/search': {
@@ -806,6 +825,7 @@ interface AppRouteRouteChildren {
   AppMediaRoute: typeof AppMediaRoute
   AppPublicRoute: typeof AppPublicRoute
   AppSearchRoute: typeof AppSearchRoute
+  AppSeeLaterRoute: typeof AppSeeLaterRoute
   AppStarsRoute: typeof AppStarsRoute
   AppTootsRoute: typeof AppTootsRoute
   AppTopRoute: typeof AppTopRoute
@@ -828,6 +848,7 @@ const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppMediaRoute: AppMediaRoute,
   AppPublicRoute: AppPublicRoute,
   AppSearchRoute: AppSearchRoute,
+  AppSeeLaterRoute: AppSeeLaterRoute,
   AppStarsRoute: AppStarsRoute,
   AppTootsRoute: AppTootsRoute,
   AppTopRoute: AppTopRoute,
