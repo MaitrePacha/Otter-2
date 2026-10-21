@@ -10,6 +10,7 @@ import {
   CopyIcon,
   EyeIcon,
   HashIcon,
+  HourglassMediumIcon,
   NavigationArrowIcon,
   RssSimpleIcon,
   StarIcon,
@@ -57,6 +58,7 @@ export const FeedItemFooter = (props: FeedItemFooterProps) => {
     modified_at,
     id,
     star,
+    see_later: seeLater,
     type,
     click_count,
     isInFeed,
@@ -79,24 +81,38 @@ export const FeedItemFooter = (props: FeedItemFooterProps) => {
       : `Created on ${createdDate.formatted}`
 
   const handleToggleState = async (
-    column: 'public' | 'star',
+    column: 'public' | 'star' | 'see_later',
   ): Promise<void> => {
     const updateData =
-      column === 'public' ? { public: !isPublic } : { star: !star }
+      column === 'public'
+        ? { public: !isPublic }
+        : column === 'star'
+          ? { star: !star }
+          : { see_later: !seeLater }
     await updateBookmark(id, updateData)
     await queryClient.invalidateQueries({ queryKey: ['bookmarks'] })
+    if (column === 'see_later') {
+      // The See later count in the sidebar
+      await queryClient.invalidateQueries({ queryKey: ['meta'] })
+    }
     const label =
       column === 'public'
         ? !isPublic
           ? 'Made public'
           : 'Made private'
-        : !star
-          ? 'Starred'
-          : 'Unstarred'
+        : column === 'star'
+          ? !star
+            ? 'Starred'
+            : 'Unstarred'
+          : !seeLater
+            ? 'Added to See later'
+            : 'Removed from See later'
     if (column === 'public') {
       !isPublic ? playPopOn() : playPopOff()
-    } else {
+    } else if (column === 'star') {
       !star ? playPopUpOn() : playPopUpOff()
+    } else {
+      !seeLater ? playPopUpOn() : playPopUpOff()
     }
     toast.success(label, {
       description: props.title || undefined,
@@ -218,6 +234,23 @@ export const FeedItemFooter = (props: FeedItemFooterProps) => {
                   )}
                 </TooltipTrigger>
                 <TooltipContent>Star/unstar this item</TooltipContent>
+              </Tooltip>
+            ) : null}
+
+            {/* Only to take a bookmark off the list: bookmarks go on it when
+                they are saved */}
+            {seeLater && allowDeletion === false ? (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <IconButton
+                    onClick={() => handleToggleState('see_later')}
+                    size="s"
+                    aria-label="Remove from See later"
+                  >
+                    <HourglassMediumIcon size={16} weight="fill" />
+                  </IconButton>
+                </TooltipTrigger>
+                <TooltipContent>Remove from See later</TooltipContent>
               </Tooltip>
             ) : null}
 

@@ -20,6 +20,7 @@ export const batchUpdateSchema = z.object({
     z.object({ tag: tagSchema, type: z.literal('addTag') }),
     z.object({ tag: tagSchema, type: z.literal('removeTag') }),
     z.object({ type: z.literal('star'), value: z.boolean() }),
+    z.object({ type: z.literal('seeLater'), value: z.boolean() }),
     z.object({ type: z.literal('public'), value: z.boolean() }),
     z.object({
       type: z.literal('setType'),
@@ -50,6 +51,8 @@ export const getBatchUpdate = (
       return {
         tags: sql`nullif(array_remove(${bookmarks.tags}, ${action.tag}::text), '{}')`,
       }
+    case 'seeLater':
+      return { seeLater: action.value }
     case 'star':
       return { star: action.value }
     case 'public':

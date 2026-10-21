@@ -58,6 +58,7 @@ const toBookmarkSet = (
   if ('image' in body) update.image = body.image as string | null
   if ('note' in body) update.note = body.note as string | null
   if ('public' in body) update.public = body.public as boolean
+  if ('see_later' in body) update.seeLater = body.see_later as boolean
   if ('star' in body) update.star = body.star as boolean
   if ('status' in body) update.status = body.status as BookmarkStatus
   if ('tags' in body) update.tags = body.tags as string[] | null

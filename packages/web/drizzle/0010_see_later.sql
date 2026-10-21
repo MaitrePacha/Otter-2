@@ -1,0 +1,1 @@
+ALTER TABLE "bookmarks" ADD COLUMN "see_later" boolean DEFAULT false NOT NULL;

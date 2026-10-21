@@ -71,11 +71,13 @@ export const getAllBookmarks = async (context: HonoContext) => {
     } = apiParameters(searchParams)
     const star = parseBoolean(searchParams.star)
     const publicItems = parseBoolean(searchParams.public)
+    const seeLater = parseBoolean(searchParams.see_later)
     const conditions = [
       eq(bookmarks.user, userId),
       status ? eq(bookmarks.status, status) : undefined,
       star === undefined ? undefined : eq(bookmarks.star, star),
       publicItems === undefined ? undefined : eq(bookmarks.public, publicItems),
+      seeLater === undefined ? undefined : eq(bookmarks.seeLater, seeLater),
       type ? eq(bookmarks.type, type as BookmarkType) : undefined,
       top ? gte(bookmarks.clickCount, 1) : undefined,
       tag && tag !== 'Untagged'

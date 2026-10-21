@@ -14,6 +14,7 @@ export const bookmarkToRow = (bookmark: BookmarkRow): BaseBookmark => ({
   modified_at: bookmark.modifiedAt.toISOString(),
   note: bookmark.note,
   public: bookmark.public,
+  see_later: bookmark.seeLater,
   star: bookmark.star,
   status: bookmark.status,
   tags: bookmark.tags,

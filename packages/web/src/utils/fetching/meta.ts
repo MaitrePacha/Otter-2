@@ -5,6 +5,7 @@ export interface DbMetaResponse {
   all: number
   top: number
   public: number
+  seeLater: number
   stars: number
   trash: number
   types: MetaType[]

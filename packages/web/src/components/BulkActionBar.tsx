@@ -4,6 +4,7 @@ import {
   DownloadIcon,
   EyeIcon,
   EyeSlashIcon,
+  HourglassMediumIcon,
   MinusCircleIcon,
   PencilSimpleIcon,
   PlusCircleIcon,
@@ -47,6 +48,8 @@ interface BulkActionBarProps {
   totalCount: number
   /** In the trash the actions are restore and permanent delete */
   isTrash?: boolean
+  /** On the See later page, a button takes the selection off the list */
+  isSeeLater?: boolean
   onSelectAll: () => void
   onClear: () => void
 }
@@ -55,6 +58,7 @@ export const BulkActionBar = ({
   selectedBookmarks,
   totalCount,
   isTrash = false,
+  isSeeLater = false,
   onSelectAll,
   onClear,
 }: BulkActionBarProps) => {
@@ -222,6 +226,18 @@ export const BulkActionBar = ({
               <EyeIcon size={16} weight="duotone" />
             )}
           </Button>
+          {isSeeLater ? (
+            <Button
+              size="xs"
+              variant="ghost"
+              disabled={isDisabled}
+              onClick={() => mutate({ type: 'seeLater', value: false })}
+              aria-label="Remove from See later"
+              title="Remove from See later"
+            >
+              <HourglassMediumIcon size={16} weight="fill" />
+            </Button>
+          ) : null}
           <Button
             size="xs"
             variant="ghost"
