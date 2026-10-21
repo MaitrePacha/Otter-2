@@ -1,4 +1,11 @@
-import { CircleIcon, NotebookIcon, PlusCircleIcon } from '@phosphor-icons/react'
+import {
+  CheckSquareIcon,
+  ChecksIcon,
+  CircleIcon,
+  NotebookIcon,
+  PlusCircleIcon,
+  TrashIcon,
+} from '@phosphor-icons/react'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
@@ -10,6 +17,7 @@ import { IconControl } from '@/components/IconControl'
 import { Input } from '@/components/Input'
 import { JournalEntryForm } from '@/components/JournalEntryForm'
 import { JournalEntryItem } from '@/components/JournalEntryItem'
+import { PageToolbar } from '@/components/PageToolbar'
 import { createTitle } from '@/constants'
 import type {
   JournalEntry,
@@ -19,8 +27,10 @@ import type {
 import {
   getJournalEntriesOptions,
   getJournalsOptions,
+  useBatchUpdateJournalEntries,
   useCreateJournal,
   useCreateJournalEntry,
+  useDeleteJournal,
   useUpdateJournalEntry,
 } from '@/utils/fetching/journal'
 
@@ -99,6 +109,13 @@ function RouteComponent() {
   const journals = journalsResponse?.data ?? []
   const createEntryMutation = useCreateJournalEntry()
   const updateEntryMutation = useUpdateJournalEntry()
+  const batchMutation = useBatchUpdateJournalEntries()
+  const deleteJournalMutation = useDeleteJournal()
+  const activeJournal = journals.find(
+    (journalItem) => journalItem.id === journalFilter,
+  )
+  const [isSelecting, setIsSelecting] = useState(false)
+  const [selection, setSelection] = useState<Set<number>>(() => new Set())
 
   const entries = useMemo(() => {
     const allEntries = entriesResponse?.data ?? []
@@ -109,6 +126,51 @@ function RouteComponent() {
 
     return allEntries.filter((item) => item.journal === journalFilter)
   }, [entriesResponse, journalFilter])
+  // Only act on selected entries that are still listed
+  const selectedIds = entries
+    .filter((entry) => selection.has(entry.id))
+    .map((entry) => entry.id)
+  const isAllSelected =
+    entries.length > 0 && selectedIds.length === entries.length
+  const isBatchDisabled = batchMutation.isPending || selectedIds.length === 0
+
+  const handleSelectedChange = (id: number, isSelected: boolean) => {
+    setSelection((prev) => {
+      const next = new Set(prev)
+      if (isSelected) {
+        next.add(id)
+      } else {
+        next.delete(id)
+      }
+      return next
+    })
+  }
+
+  const handleDeleteJournal = () => {
+    if (
+      activeJournal &&
+      confirm(
+        `Delete the journal "${activeJournal.name}"? Its ${entries.length} ${entries.length === 1 ? 'entry' : 'entries'} will be kept, without a journal.`,
+      )
+    ) {
+      deleteJournalMutation.mutate(activeJournal.id, {
+        onSuccess: () => setJournalFilter(undefined),
+      })
+    }
+  }
+
+  const handleDeleteEntries = () => {
+    if (
+      confirm(
+        `Are you sure you want to delete ${selectedIds.length} journal ${selectedIds.length === 1 ? 'entry' : 'entries'}?`,
+      )
+    ) {
+      batchMutation.mutate(
+        { action: { type: 'delete' }, ids: selectedIds },
+        { onSuccess: () => setSelection(new Set()) },
+      )
+    }
+  }
 
   const handleCreateEntry = (formData: JournalEntryInsert) => {
     createEntryMutation.mutate(formData, {
@@ -182,15 +244,24 @@ function RouteComponent() {
         ) : (
           <div />
         )}
-        <div className="flex gap-xs">
+        <PageToolbar>
+          {activeJournal ? (
+            <Button
+              size="xs"
+              variant="ghost"
+              disabled={deleteJournalMutation.isPending}
+              onClick={handleDeleteJournal}
+            >
+              <TrashIcon size={16} weight="duotone" /> Delete journal
+            </Button>
+          ) : null}
           <Dialog
             open={isJournalDialogOpen}
             onOpenChange={setIsJournalDialogOpen}
           >
             <DialogTrigger asChild>
-              <Button variant="outline">
-                <PlusCircleIcon size={18} weight="duotone" />
-                New journal
+              <Button size="xs" variant="ghost">
+                <PlusCircleIcon size={16} weight="duotone" /> New journal
               </Button>
             </DialogTrigger>
             <DialogContent placement="center" width="m">
@@ -209,9 +280,8 @@ function RouteComponent() {
             }}
           >
             <DialogTrigger asChild>
-              <Button variant="outline">
-                <PlusCircleIcon size={18} weight="duotone" />
-                New entry
+              <Button size="xs" variant="ghost">
+                <PlusCircleIcon size={16} weight="duotone" /> New entry
               </Button>
             </DialogTrigger>
             <DialogContent placement="center" width="m">
@@ -236,7 +306,84 @@ function RouteComponent() {
               />
             </DialogContent>
           </Dialog>
-        </div>
+          <Button
+            size="xs"
+            variant="ghost"
+            aria-pressed={isSelecting}
+            onClick={() => {
+              setIsSelecting((prev) => !prev)
+              setSelection(new Set())
+            }}
+          >
+            <CheckSquareIcon
+              size={16}
+              weight={isSelecting ? 'fill' : 'duotone'}
+            />{' '}
+            Select
+          </Button>
+        </PageToolbar>
+        {/* Same short row of icon buttons as the bookmark bulk actions */}
+        {isSelecting ? (
+          <PageToolbar>
+            <span className="px-2xs text-step--2 text-theme11">
+              {selectedIds.length} selected
+            </span>
+            <Button
+              size="xs"
+              variant="ghost"
+              onClick={() =>
+                setSelection(
+                  isAllSelected
+                    ? new Set()
+                    : new Set(entries.map((entry) => entry.id)),
+                )
+              }
+              aria-pressed={isAllSelected}
+              aria-label={isAllSelected ? 'Deselect all' : 'Select all'}
+              title={
+                isAllSelected
+                  ? 'Deselect all'
+                  : `Select all (${entries.length})`
+              }
+            >
+              <ChecksIcon
+                size={16}
+                weight={isAllSelected ? 'bold' : 'regular'}
+              />
+            </Button>
+            <select
+              aria-label="Move to journal"
+              className="input-base focus w-auto text-step--2"
+              disabled={isBatchDisabled || journals.length === 0}
+              onChange={(event) =>
+                batchMutation.mutate({
+                  action: { journal: Number(event.target.value), type: 'move' },
+                  ids: selectedIds,
+                })
+              }
+              value=""
+            >
+              <option value="" disabled hidden>
+                Move to…
+              </option>
+              {journals.map((journalItem) => (
+                <option key={journalItem.id} value={journalItem.id}>
+                  {journalItem.name}
+                </option>
+              ))}
+            </select>
+            <Button
+              size="xs"
+              variant="ghost"
+              disabled={isBatchDisabled}
+              onClick={handleDeleteEntries}
+              aria-label="Delete"
+              title="Delete"
+            >
+              <TrashIcon size={16} weight="duotone" />
+            </Button>
+          </PageToolbar>
+        ) : null}
       </div>
 
       <div className="max-w-prose">
@@ -247,6 +394,12 @@ function RouteComponent() {
               entry={entry}
               onEdit={handleEditEntry}
               onSelectJournal={setJournalFilter}
+              {...(isSelecting
+                ? {
+                    isSelected: selection.has(entry.id),
+                    onSelectedChange: handleSelectedChange,
+                  }
+                : {})}
             />
           ))
         ) : (

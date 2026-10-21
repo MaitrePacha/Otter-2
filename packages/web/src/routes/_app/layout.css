@@ -118,3 +118,59 @@
   padding-bottom: var(--space-xl);
   min-height: 100%;
 }
+
+/* Page buttons (filters, Select, Share, Add…), one centred row under the
+   top bar. Same background as the top bar so it reads as part of it. */
+.otter-page-toolbar {
+  position: sticky;
+  top: var(--header-height);
+  z-index: var(--z-1);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3xs);
+  padding: var(--space-3xs) var(--space-2xs) var(--space-2xs);
+  border-bottom: 1px solid var(--border);
+  background-color: var(--background);
+
+  &:empty {
+    display: none;
+  }
+}
+
+/* The top bar and a filled page toolbar read as one block */
+.otter-app-container:has(.otter-page-toolbar:not(:empty)) .otter-top-bar {
+  border-bottom-color: transparent;
+}
+
+.otter-page-toolbar-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3xs);
+
+  /* Buttons look like the settings tabs (.link-sidebar): same weight, hover
+     and, when pressed, the active tab colours */
+  .button-ghost {
+    gap: var(--space-3xs);
+    padding-inline: var(--space-2xs);
+    border: 0;
+    border-radius: var(--radii-m);
+    color: var(--theme10);
+    font-size: var(--step--2);
+    font-weight: 500;
+    letter-spacing: normal;
+
+    &:hover {
+      border: 0;
+      color: var(--theme11);
+      background-color: var(--theme5);
+    }
+
+    &[aria-pressed="true"] {
+      border: 0;
+      color: var(--accent11);
+      background-color: var(--accent6);
+    }
+  }
+}

@@ -1,18 +1,46 @@
+import switchOffSfx from '@mrmartineau/kit/sounds/switch-off.mp3'
 import switchOnSfx from '@mrmartineau/kit/sounds/switch-on.mp3'
 import useSound from '@mrmartineau/use-sound'
-import { PlusCircleIcon } from '@phosphor-icons/react'
-import { useLocation } from '@tanstack/react-router'
+import { PlusCircleIcon, XCircleIcon } from '@phosphor-icons/react'
+import { useCanGoBack, useLocation, useRouter } from '@tanstack/react-router'
 import { cn } from '@/utils/classnames'
-import { ROUTE_NEW_BOOKMARK } from '../constants'
+import { ROUTE_HOME, ROUTE_NEW_BOOKMARK } from '../constants'
 import { Link } from './Link'
 import { Tooltip, TooltipContent, TooltipTrigger } from './Tooltip'
 
 export const FabAdd = () => {
   const location = useLocation()
+  const router = useRouter()
+  const canGoBack = useCanGoBack()
   const [playSwitchOn] = useSound(switchOnSfx)
+  const [playSwitchOff] = useSound(switchOffSfx)
 
-  const disableFab =
-    location.pathname === `/new/bookmark` || location.pathname.includes('edit')
+  // On the add form the button closes it instead
+  if (location.pathname === ROUTE_NEW_BOOKMARK) {
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Link
+            href={ROUTE_HOME}
+            variant="fab"
+            aria-label="Close the form"
+            onClick={(event) => {
+              playSwitchOff()
+              if (canGoBack) {
+                event.preventDefault()
+                router.history.back()
+              }
+            }}
+          >
+            <XCircleIcon size="24" weight="duotone" color="currentColor" />
+          </Link>
+        </TooltipTrigger>
+        <TooltipContent>Close</TooltipContent>
+      </Tooltip>
+    )
+  }
+
+  const disableFab = location.pathname.includes('edit')
 
   return (
     <Tooltip>
