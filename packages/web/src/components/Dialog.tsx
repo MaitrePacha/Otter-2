@@ -9,10 +9,7 @@ export const DialogTrigger = DialogPrimitive.Trigger
 export const DialogClose = DialogPrimitive.Close
 
 export const Dialog = ({ children, ...props }: DialogPrimitive.DialogProps) => (
-  <DialogPrimitive.Root {...props}>
-    <DialogPrimitive.Overlay />
-    {children}
-  </DialogPrimitive.Root>
+  <DialogPrimitive.Root {...props}>{children}</DialogPrimitive.Root>
 )
 
 interface DialogContentProps
