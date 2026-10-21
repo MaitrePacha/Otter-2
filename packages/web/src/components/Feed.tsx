@@ -22,6 +22,7 @@ import { BookmarkFeedItem } from './BookmarkFeedItem'
 import { BulkActionBar } from './BulkActionBar'
 import { Flex } from './Flex'
 import { headingVariants } from './Heading'
+import { Link } from './Link'
 import { Loader } from './Loader'
 import { PageToolbar } from './PageToolbar'
 import { ShareDialog } from './ShareDialog'
@@ -36,6 +37,8 @@ interface FeedProps {
     href: string
     isActive?: boolean
     icon?: ReactNode
+    /** Makes the item a filter: a link to the same page with this search */
+    search?: Record<string, unknown>
   }[]
   icon?: ReactNode
   items: FeedItemModel[]
@@ -248,8 +251,24 @@ export const Feed = memo(
           </Flex>
           {subNav ? (
             <Flex gapX="3xs" gapY="3xs" wrap="wrap">
-              {subNav.map(({ href, text, isActive, icon }) => {
-                return (
+              {subNav.map(({ href, text, isActive, icon, search }) => {
+                return search ? (
+                  <Link
+                    href={href}
+                    // @ts-expect-error How do I type search params?
+                    search={search}
+                    variant="sidebar"
+                    isActive={isActive}
+                    aria-pressed={isActive}
+                    resetScroll={false}
+                    key={text}
+                  >
+                    <div className="link-sidebar-inner">
+                      {icon}
+                      {text}
+                    </div>
+                  </Link>
+                ) : (
                   <SidebarLink href={href} isActive={isActive} key={href}>
                     <>
                       {icon}

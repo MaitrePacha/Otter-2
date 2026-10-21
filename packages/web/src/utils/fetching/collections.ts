@@ -7,13 +7,19 @@ import type { CollectionType } from './meta'
 interface CollectionsFetchingOptions {
   name: string
   params: Partial<ApiParametersQuery>
+  /** Only bookmarks with at least one of these tags */
+  tags?: string[]
 }
 
 const queryString = (params: Record<string, unknown>) => {
   const searchParams = new URLSearchParams()
 
   for (const [key, value] of Object.entries(params)) {
-    if (value !== undefined && value !== null && value !== '') {
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        searchParams.append(key, String(item))
+      }
+    } else if (value !== undefined && value !== null && value !== '') {
       searchParams.set(key, String(value))
     }
   }
@@ -38,10 +44,11 @@ const parseJsonResponse = async <T>(response: Response): Promise<T> => {
 export const getCollections = async ({
   params,
   name,
+  tags,
 }: CollectionsFetchingOptions) => {
   const parsed = apiParameters(params)
   const response = await fetch(
-    `/api/collections/${encodeURIComponent(name)}${queryString(parsed)}`,
+    `/api/collections/${encodeURIComponent(name)}${queryString({ ...parsed, tags })}`,
     { credentials: 'include' },
   )
   const body = await parseJsonResponse<{
@@ -66,6 +73,7 @@ export const getCollectionsOptions = ({
 export const getCollectionsInfiniteOptions = ({
   name,
   params,
+  tags,
 }: CollectionsFetchingOptions) => {
   const {
     limit = DEFAULT_API_RESPONSE_LIMIT,
@@ -84,8 +92,12 @@ export const getCollectionsInfiniteOptions = ({
     },
     initialPageParam: 0,
     queryFn: ({ pageParam = 0 }) =>
-      getCollections({ name, params: { ...rest, limit, offset: pageParam } }),
-    queryKey: ['collections', 'infinite', name, rest, limit],
+      getCollections({
+        name,
+        params: { ...rest, limit, offset: pageParam },
+        tags,
+      }),
+    queryKey: ['collections', 'infinite', name, rest, limit, tags],
   })
 }
 

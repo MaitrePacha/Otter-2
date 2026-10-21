@@ -1,4 +1,4 @@
-import { and, count, desc, eq, gte, lt, sql } from 'drizzle-orm'
+import { and, arrayOverlaps, count, desc, eq, gte, lt, sql } from 'drizzle-orm'
 import type { Context } from 'hono'
 import { API_HEADERS, DEFAULT_API_RESPONSE_LIMIT } from '@/constants'
 import { apiParameters } from '@/utils/fetching/apiParameters'
@@ -368,6 +368,8 @@ export const getCollectionBookmarks = async (context: HonoContext) => {
     const dateWindow = params.window
     const star = searchParams.star === 'true' ? true : undefined
     const publicItems = searchParams.public === 'true' ? true : undefined
+    // Sub-folder filters: bookmarks with any of the given tags
+    const tags = new URL(context.req.url).searchParams.getAll('tags')
     const { db } = auth.requestContext
     // Same star/public/date-window filters as /api/bookmarks, so a collection
     // can be narrowed the same way as any other feed.
@@ -375,6 +377,7 @@ export const getCollectionBookmarks = async (context: HonoContext) => {
       eq(bookmarks.user, auth.userId),
       eq(bookmarks.status, 'active'),
       collectionMatchCondition(name),
+      tags.length ? arrayOverlaps(bookmarks.tags, tags) : undefined,
       star === undefined ? undefined : eq(bookmarks.star, star),
       publicItems === undefined ? undefined : eq(bookmarks.public, publicItems),
       dateWindow

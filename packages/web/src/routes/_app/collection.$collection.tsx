@@ -19,21 +19,27 @@ export const Route = createFileRoute('/_app/collection/$collection')({
   loaderDeps: ({ search }) => ({ search }),
   validateSearch: (search: Record<string, unknown>) => {
     const { offset: _, ...params } = apiParameters(search)
-    return params
+    const tags = Array.isArray(search.tags)
+      ? search.tags.filter((tag): tag is string => typeof tag === 'string')
+      : undefined
+    return { ...params, tags: tags?.length ? tags : undefined }
   },
 })
 
 function Page() {
   const collection = Route.useParams().collection
-  const search = useSearch({ from: '/_app/collection/$collection' })
+  const { tags, ...search } = useSearch({
+    from: '/_app/collection/$collection',
+  })
   const { data, hasNextPage, isFetchingNextPage, fetchNextPage } =
     useSuspenseInfiniteQuery(
       getCollectionsInfiniteOptions({
         name: collection,
         params: search,
+        tags,
       }),
     )
-  const subNav = useCollectionsSubNav(collection)
+  const subNav = useCollectionsSubNav(collection, tags)
 
   const items = data.pages.flatMap((page) => page.data ?? []) as Bookmark[]
   const count = data.pages[0]?.count ?? 0
