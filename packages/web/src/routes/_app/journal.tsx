@@ -10,6 +10,7 @@ import { IconControl } from '@/components/IconControl'
 import { Input } from '@/components/Input'
 import { JournalEntryForm } from '@/components/JournalEntryForm'
 import { JournalEntryItem } from '@/components/JournalEntryItem'
+import { PageToolbar } from '@/components/PageToolbar'
 import { createTitle } from '@/constants'
 import type {
   JournalEntry,
@@ -182,15 +183,14 @@ function RouteComponent() {
         ) : (
           <div />
         )}
-        <div className="flex gap-xs">
+        <PageToolbar>
           <Dialog
             open={isJournalDialogOpen}
             onOpenChange={setIsJournalDialogOpen}
           >
             <DialogTrigger asChild>
-              <Button variant="outline">
-                <PlusCircleIcon size={18} weight="duotone" />
-                New journal
+              <Button size="xs" variant="ghost">
+                <PlusCircleIcon size={16} weight="duotone" /> New journal
               </Button>
             </DialogTrigger>
             <DialogContent placement="center" width="m">
@@ -209,9 +209,8 @@ function RouteComponent() {
             }}
           >
             <DialogTrigger asChild>
-              <Button variant="outline">
-                <PlusCircleIcon size={18} weight="duotone" />
-                New entry
+              <Button size="xs" variant="ghost">
+                <PlusCircleIcon size={16} weight="duotone" /> New entry
               </Button>
             </DialogTrigger>
             <DialogContent placement="center" width="m">
@@ -236,7 +235,7 @@ function RouteComponent() {
               />
             </DialogContent>
           </Dialog>
-        </div>
+        </PageToolbar>
       </div>
 
       <div className="max-w-prose">
