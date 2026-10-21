@@ -1,5 +1,6 @@
-import { and, desc, eq, ne, sql } from 'drizzle-orm'
+import { and, desc, eq, inArray, ne, sql } from 'drizzle-orm'
 import type { Context } from 'hono'
+import { z } from 'zod'
 import { API_HEADERS } from '@/constants'
 import type { Journal, JournalEntry, JournalStatus } from '@/types/db'
 import { getErrorMessage } from '@/utils/get-error-message'
@@ -232,7 +233,8 @@ export const updateJournal = async (context: HonoContext) => {
 
 /**
  * DELETE /api/journals/:id
- * Soft-deletes a journal by setting its status to 'deleted'.
+ * Soft-deletes a journal by setting its status to 'deleted'. Its entries
+ * are kept, without a journal.
  */
 export const deleteJournal = async (context: HonoContext) => {
   try {
@@ -256,6 +258,16 @@ export const deleteJournal = async (context: HonoContext) => {
     if (!item) {
       return notFoundResponse('Journal not found or access denied')
     }
+
+    await auth.requestContext.db
+      .update(journalEntries)
+      .set({ journal: null })
+      .where(
+        and(
+          eq(journalEntries.journal, item.id),
+          eq(journalEntries.owner, auth.userId),
+        ),
+      )
 
     return new Response(
       JSON.stringify({ data: journalToRow(item), error: null }),
@@ -501,5 +513,81 @@ export const deleteJournalEntry = async (context: HonoContext) => {
     )
   } catch (error) {
     return errorResponse(error, 'Problem deleting journal entry')
+  }
+}
+
+export const MAX_ENTRY_BATCH_SIZE = 500
+
+export const batchJournalEntriesSchema = z.object({
+  action: z.discriminatedUnion('type', [
+    z.object({ journal: z.number().int().positive(), type: z.literal('move') }),
+    z.object({ type: z.literal('delete') }),
+  ]),
+  ids: z.array(z.number().int().positive()).min(1).max(MAX_ENTRY_BATCH_SIZE),
+})
+
+export type JournalEntryBatchAction = z.infer<
+  typeof batchJournalEntriesSchema
+>['action']
+
+/**
+ * POST /api/journal-entries/batch
+ * Moves many of the user's entries to another of their journals, or
+ * soft-deletes them, in a single query.
+ */
+export const batchUpdateJournalEntries = async (context: HonoContext) => {
+  try {
+    const auth = await getJournalContext(context)
+
+    if (auth instanceof Response) {
+      return auth
+    }
+
+    const parsed = batchJournalEntriesSchema.safeParse(await context.req.json())
+
+    if (!parsed.success) {
+      return errorResponse(
+        new Error(z.prettifyError(parsed.error)),
+        'Invalid batch update payload',
+      )
+    }
+
+    const { action, ids } = parsed.data
+
+    if (
+      action.type === 'move' &&
+      !(await userOwnsJournal(
+        auth.requestContext.db,
+        action.journal,
+        auth.userId,
+      ))
+    ) {
+      return notFoundResponse('Journal not found or access denied')
+    }
+
+    const updated = await auth.requestContext.db
+      .update(journalEntries)
+      .set(
+        action.type === 'move'
+          ? { journal: action.journal }
+          : { status: 'deleted' },
+      )
+      .where(
+        and(
+          eq(journalEntries.owner, auth.userId),
+          inArray(journalEntries.id, ids),
+        ),
+      )
+      .returning({ id: journalEntries.id })
+
+    return new Response(
+      JSON.stringify({ data: { updated: updated.length }, error: null }),
+      {
+        headers: API_HEADERS,
+        status: 200,
+      },
+    )
+  } catch (error) {
+    return errorResponse(error, 'Problem updating journal entries')
   }
 }
