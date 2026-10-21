@@ -4,9 +4,21 @@ import useSound from '@mrmartineau/use-sound'
 import { PlusCircleIcon, XCircleIcon } from '@phosphor-icons/react'
 import { useCanGoBack, useLocation, useRouter } from '@tanstack/react-router'
 import { cn } from '@/utils/classnames'
-import { ROUTE_HOME, ROUTE_NEW_BOOKMARK } from '../constants'
+import {
+  ROUTE_HOME,
+  ROUTE_MEDIA,
+  ROUTE_NEW_BOOKMARK,
+  ROUTE_NEW_MEDIA,
+} from '../constants'
 import { Link } from './Link'
 import { Tooltip, TooltipContent, TooltipTrigger } from './Tooltip'
+
+// Add forms where the button closes the form, and where it goes without
+// history to go back to
+const CLOSE_FALLBACKS: Record<string, string> = {
+  [ROUTE_NEW_BOOKMARK]: ROUTE_HOME,
+  [ROUTE_NEW_MEDIA]: ROUTE_MEDIA,
+}
 
 export const FabAdd = () => {
   const location = useLocation()
@@ -15,13 +27,14 @@ export const FabAdd = () => {
   const [playSwitchOn] = useSound(switchOnSfx)
   const [playSwitchOff] = useSound(switchOffSfx)
 
-  // On the add form the button closes it instead
-  if (location.pathname === ROUTE_NEW_BOOKMARK) {
+  const closeFallback = CLOSE_FALLBACKS[location.pathname]
+
+  if (closeFallback) {
     return (
       <Tooltip>
         <TooltipTrigger asChild>
           <Link
-            href={ROUTE_HOME}
+            href={closeFallback}
             variant="fab"
             aria-label="Close the form"
             onClick={(event) => {
