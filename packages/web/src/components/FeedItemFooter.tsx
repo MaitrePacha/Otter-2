@@ -161,7 +161,8 @@ export const FeedItemFooter = (props: FeedItemFooterProps) => {
               <>
                 <Favicon url={url} />
                 <Link
-                  rel="external"
+                  rel="external noopener noreferrer"
+                  target="_blank"
                   href={url}
                   onClick={() => handleClickRegister(id)}
                 >

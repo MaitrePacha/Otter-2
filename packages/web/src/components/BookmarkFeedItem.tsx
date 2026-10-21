@@ -50,6 +50,8 @@ export const BookmarkFeedItem = (props: BookmarkFeedItemProps) => {
               <Link
                 href={url}
                 variant="feedTitle"
+                target="_blank"
+                rel="noopener noreferrer"
                 onClick={() => handleClickRegister(id)}
               >
                 {title}
