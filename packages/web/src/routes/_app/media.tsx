@@ -10,6 +10,7 @@ import { IconControl } from '@/components/IconControl'
 import { Input } from '@/components/Input'
 import { MediaColumn } from '@/components/MediaColumn'
 import { MediaForm } from '@/components/MediaForm'
+import { PageToolbar } from '@/components/PageToolbar'
 import { MediaTypeToIcon } from '@/components/TypeToIcon'
 import { createTitle, ROUTE_NEW_MEDIA } from '@/constants'
 import type { Media, MediaFilters, MediaStatus, MediaUpdate } from '@/types/db'
@@ -194,14 +195,13 @@ function RouteComponent() {
             </div>
           </div>
         </div>
-        <div>
-          <Button variant="outline" asChild>
+        <PageToolbar>
+          <Button size="xs" variant="ghost" asChild>
             <RouterLink to={ROUTE_NEW_MEDIA}>
-              <PlusCircleIcon size={18} weight="duotone" />
-              Add Media
+              <PlusCircleIcon size={16} weight="duotone" /> Add Media
             </RouterLink>
           </Button>
-        </div>
+        </PageToolbar>
       </div>
 
       <Dialog

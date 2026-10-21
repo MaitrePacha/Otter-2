@@ -9,6 +9,7 @@ import { MAX_CONTENT_LENGTH, summariseSystemPrompt } from './ai/summarise'
 import { titleSystemPrompt } from './ai/title'
 import { sendBlueskyPost } from './bluesky/sendBlueskyPost'
 import { getTagCounts } from './bookmarks/aggregates'
+import { batchUpdateBookmarks } from './bookmarks/batch'
 import { getAllBookmarks } from './bookmarks/getAllBookmarks'
 import { getRecentPublicBookmarks } from './bookmarks/getRecentPublicBookmarks'
 import { exportBookmarks, importBookmarks } from './bookmarks/importExport'
@@ -30,6 +31,7 @@ import {
   upsertBlueskyIntegration,
 } from './integrations'
 import {
+  batchUpdateJournalEntries,
   createJournal,
   createJournalEntry,
   deleteJournal,
@@ -228,6 +230,9 @@ api.post('/bookmarks', async (c) => {
 api.post('/bookmarks/import', async (c) => {
   return await importBookmarks(c)
 })
+api.post('/bookmarks/batch', async (c) => {
+  return await batchUpdateBookmarks(c)
+})
 api.get('/bookmarks/export', async (c) => {
   return await exportBookmarks(c)
 })
@@ -344,6 +349,9 @@ api.get('/journal-entries', async (c) => {
 })
 api.post('/journal-entries', async (c) => {
   return await createJournalEntry(c)
+})
+api.post('/journal-entries/batch', async (c) => {
+  return await batchUpdateJournalEntries(c)
 })
 api.get('/journal-entries/:id', async (c) => {
   return await getJournalEntry(c)

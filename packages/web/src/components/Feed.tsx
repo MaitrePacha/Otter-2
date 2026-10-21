@@ -1,4 +1,5 @@
 import {
+  CheckSquareIcon,
   ClockCounterClockwiseIcon,
   EyeIcon,
   StarIcon,
@@ -6,7 +7,7 @@ import {
 } from '@phosphor-icons/react'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import type { FileRouteTypes } from '@tanstack/react-router'
-import { memo, type ReactNode } from 'react'
+import { memo, type ReactNode, useMemo, useState } from 'react'
 import { ErrorBoundary } from 'react-error-boundary'
 import { Button } from '@/components/Button'
 import { CONTENT, DEFAULT_API_RESPONSE_LIMIT } from '@/constants'
@@ -18,9 +19,11 @@ import type { ShareKind } from '@/utils/fetching/shares'
 import type { Bookmark, Toot, Tweet } from '../types/db'
 import { cn } from '../utils/classnames'
 import { BookmarkFeedItem } from './BookmarkFeedItem'
+import { BulkActionBar } from './BulkActionBar'
 import { Flex } from './Flex'
 import { headingVariants } from './Heading'
 import { Loader } from './Loader'
+import { PageToolbar } from './PageToolbar'
 import { ShareDialog } from './ShareDialog'
 import { SidebarLink } from './SidebarLink'
 import { TootFeedItem } from './TootFeedItem'
@@ -68,6 +71,7 @@ export const Feed = memo(
     count: _count,
     limit: _limit = DEFAULT_API_RESPONSE_LIMIT,
     allowGroupByDate = false,
+    feedType,
     subNav,
     showFeedOptions = true,
     from: _from,
@@ -93,6 +97,40 @@ export const Feed = memo(
     const { data: collectionsTags } = useSuspenseQuery(
       getCollectionsTagsOptions(),
     )
+    // Bulk editing is for bookmark feeds; allowDeletion marks the trash
+    const canSelect = feedType === 'bookmarks'
+    const [isSelecting, setIsSelecting] = useState(false)
+    const [selection, setSelection] = useState<Set<string>>(() => new Set())
+    const bookmarkIds = useMemo(
+      () => items.filter(isBookmark).map((item) => item.id),
+      [items],
+    )
+    // Ignore selected bookmarks that have left the feed (trashed, filtered)
+    const selectedBookmarks = items.filter(
+      (item): item is Bookmark => isBookmark(item) && selection.has(item.id),
+    )
+    const handleSelectedChange = (id: string, isSelected: boolean) => {
+      setSelection((prev) => {
+        const next = new Set(prev)
+        if (isSelected) {
+          next.add(id)
+        } else {
+          next.delete(id)
+        }
+        return next
+      })
+    }
+    const handleToggleSelecting = () => {
+      setIsSelecting((prev) => !prev)
+      setSelection(new Set())
+    }
+    const selectionProps = (id: string) =>
+      isSelecting
+        ? {
+            isSelected: selection.has(id),
+            onSelectedChange: handleSelectedChange,
+          }
+        : {}
 
     const handleToggleState = async (
       column: 'public' | 'star',
@@ -118,8 +156,9 @@ export const Feed = memo(
               {icon}
               {title}
             </h3>
-            {showFeedOptions || shareConfig ? (
-              <Flex gap="3xs">
+            {/* The page's buttons live in the toolbar under the top bar */}
+            {showFeedOptions || shareConfig || canSelect ? (
+              <PageToolbar>
                 {showFeedOptions ? (
                   <>
                     <Button
@@ -179,7 +218,32 @@ export const Feed = memo(
                     name={shareConfig.name}
                   />
                 ) : null}
-              </Flex>
+                {canSelect ? (
+                  <Button
+                    onClick={handleToggleSelecting}
+                    size="xs"
+                    variant="ghost"
+                    aria-pressed={isSelecting}
+                  >
+                    <CheckSquareIcon
+                      size={16}
+                      weight={isSelecting ? 'fill' : 'duotone'}
+                    />{' '}
+                    Select
+                  </Button>
+                ) : null}
+              </PageToolbar>
+            ) : null}
+            {isSelecting ? (
+              <PageToolbar>
+                <BulkActionBar
+                  selectedBookmarks={selectedBookmarks}
+                  totalCount={bookmarkIds.length}
+                  isTrash={allowDeletion}
+                  onSelectAll={() => setSelection(new Set(bookmarkIds))}
+                  onClear={() => setSelection(new Set())}
+                />
+              </PageToolbar>
             ) : null}
           </Flex>
           {subNav ? (
@@ -223,6 +287,7 @@ export const Feed = memo(
                             allowDeletion={allowDeletion}
                             collections={collectionsTags ?? []}
                             key={item.id}
+                            {...selectionProps(item.id)}
                           />
                         )
                       })}
@@ -252,6 +317,7 @@ export const Feed = memo(
                     allowDeletion={allowDeletion}
                     collections={collectionsTags ?? []}
                     key={item.id}
+                    {...selectionProps(item.id)}
                   />
                 )
               })

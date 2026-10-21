@@ -1,6 +1,7 @@
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 import { Toaster } from 'sonner'
 import { Container } from '@/components/Container'
+import { PageToolbarProvider, PageToolbarSlot } from '@/components/PageToolbar'
 import { Sidebar } from '@/components/Sidebar'
 import { TopBar } from '@/components/TopBar'
 import { UserProvider } from '@/components/UserProvider'
@@ -27,21 +28,24 @@ function RouteComponent() {
 
   return (
     <UserProvider>
-      <div className="otter-app-container">
-        <TopBar />
-        <div className="otter-primary-pane">
-          <Sidebar version={pkg.version} />
-          <div className="otter-sidebar-pane-overlay" />
-          <main id="main" className="otter-content-pane">
-            <div className="otter-content-pane-inner">
-              <Container className="min-h-dvh">
-                <Outlet />
-              </Container>
-            </div>
-          </main>
+      <PageToolbarProvider>
+        <div className="otter-app-container">
+          <TopBar />
+          <div className="otter-primary-pane">
+            <Sidebar version={pkg.version} />
+            <div className="otter-sidebar-pane-overlay" />
+            <main id="main" className="otter-content-pane">
+              <PageToolbarSlot />
+              <div className="otter-content-pane-inner">
+                <Container className="min-h-dvh">
+                  <Outlet />
+                </Container>
+              </div>
+            </main>
+          </div>
+          <Toaster position="bottom-center" richColors />
         </div>
-        <Toaster position="bottom-center" richColors />
-      </div>
+      </PageToolbarProvider>
     </UserProvider>
   )
 }
