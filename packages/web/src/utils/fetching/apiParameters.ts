@@ -17,6 +17,7 @@ export interface BaseApiParameters {
 export interface ApiParametersQuery extends BaseApiParameters {
   star: boolean | undefined
   public: boolean | undefined
+  see_later: boolean | undefined
   // 7-day date window: 1 = last 7 days, 2 = 8–14 days ago, etc.
   window: number | undefined
 }
@@ -29,6 +30,7 @@ export const apiParameters = (
   const status = apiParams?.status || 'active'
   const star = apiParams?.star || undefined
   const publicItems = apiParams?.public || undefined
+  const seeLater = apiParams?.see_later || undefined
   const type = apiParams?.type || undefined
   const tag = apiParams?.tag || undefined
   const top = apiParams?.top || undefined
@@ -40,6 +42,7 @@ export const apiParameters = (
     offset,
     order: order as RequestOrder,
     public: publicItems,
+    see_later: seeLater,
     star,
     status: status as Status,
     tag,

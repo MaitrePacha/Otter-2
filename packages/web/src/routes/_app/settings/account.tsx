@@ -26,6 +26,7 @@ const SECTION_LABELS: Record<SidebarSection, string> = {
   journal: 'Journal',
   media: 'Media',
   public: 'Public',
+  seeLater: 'See later',
   stars: 'Stars',
   tags: 'Tags',
   toots: 'Toots (Mastodon)',

@@ -59,6 +59,7 @@ const toBookmarkInsert = (
   modifiedAt: bookmark.modified_at ? new Date(bookmark.modified_at) : undefined,
   note: bookmark.note,
   public: bookmark.public,
+  seeLater: bookmark.see_later,
   star: bookmark.star,
   status: bookmark.status as BookmarkStatus | undefined,
   tags: bookmark.tags,
@@ -235,7 +236,8 @@ export const scrapedBookmark = async (
   return {
     ...base,
     description: rewritten.description,
-    tags: [...new Set([...auto.tags, ...tags])],
+    // A See later save is sorted by hand later, so it gets no AI tags
+    tags: rest.see_later ? tags : [...new Set([...auto.tags, ...tags])],
     title: rewritten.title,
     type: auto.type ?? (base.type as BookmarkType | undefined),
   }

@@ -64,6 +64,7 @@ export const getMeta = async (context: HonoContext) => {
       all,
       top,
       publicItems,
+      seeLater,
       stars,
       trash,
       tags,
@@ -77,6 +78,7 @@ export const getMeta = async (context: HonoContext) => {
       countBookmarks(auth),
       countBookmarks(auth, gte(bookmarks.clickCount, 1)),
       countBookmarks(auth, eq(bookmarks.public, true)),
+      countBookmarks(auth, eq(bookmarks.seeLater, true)),
       countBookmarks(auth, eq(bookmarks.star, true)),
       (async () => {
         const [{ value }] = await db
@@ -138,6 +140,7 @@ export const getMeta = async (context: HonoContext) => {
         likedToots,
         likedTweets,
         public: publicItems,
+        seeLater,
         stars,
         tags,
         toots: tootsCount,
