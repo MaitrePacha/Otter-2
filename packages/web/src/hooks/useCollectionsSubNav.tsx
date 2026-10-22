@@ -40,7 +40,13 @@ export const useCollectionsSubNav = (
               icon: <HashIcon weight="duotone" size={18} />,
               isActive,
               search: { tags: tags.length ? tags : undefined },
-              text: item,
+              // Inside the collection its name is implied: tag, not
+              // collection:tag
+              text: item
+                .toLowerCase()
+                .startsWith(`${collection.toLowerCase()}:`)
+                ? item.slice(collection.length + 1)
+                : item,
             }
           })
       : []
