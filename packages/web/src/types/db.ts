@@ -29,6 +29,7 @@ export interface BaseBookmark {
   modified_at: string
   note: string | null
   public: boolean
+  see_later: boolean
   star: boolean
   status: BookmarkStatus
   tags: string[] | null
@@ -110,12 +111,30 @@ export interface BookmarkFormValues
   id?: string
 }
 
+/** Sidebar sections that can be hidden from Settings > Preferences */
+export const SIDEBAR_SECTIONS = [
+  'dashboard',
+  'seeLater',
+  'public',
+  'stars',
+  'top',
+  'toots',
+  'tweets',
+  'types',
+  'tags',
+  'collections',
+  'media',
+  'journal',
+] as const
+export type SidebarSection = (typeof SIDEBAR_SECTIONS)[number]
+
 export interface UserProfile {
   api_key: string | null
   avatar_url: string | null
   id: string
   settings_collections_visible: boolean
   settings_group_by_date: boolean | null
+  settings_hidden_sections: SidebarSection[]
   settings_pinned_tags: string[]
   settings_tags_visible: boolean
   settings_top_tags_count: number | null

@@ -1,7 +1,12 @@
 import buy01Sfx from '@mrmartineau/kit/sounds/buy-01.mp3'
 import buy02Sfx from '@mrmartineau/kit/sounds/buy-02.mp3'
 import useSound from '@mrmartineau/use-sound'
-import { CircleIcon, DownloadIcon, SparkleIcon } from '@phosphor-icons/react'
+import {
+  CircleIcon,
+  DownloadIcon,
+  HourglassMediumIcon,
+  SparkleIcon,
+} from '@phosphor-icons/react'
 import { useForm, useStore } from '@tanstack/react-form'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
@@ -636,9 +641,31 @@ export const BookmarkForm = ({
           </div>
           <div className="bookmark-form-footer">
             <Flex gap="xs" direction="column">
-              <Button type="submit" disabled={isSubmitting}>
-                Save
-              </Button>
+              {/* Adding offers a second way to save: onto the See later list */}
+              <Flex gap="xs">
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="flex-1"
+                  onClick={
+                    isNew
+                      ? () => form.setFieldValue('see_later', false)
+                      : undefined
+                  }
+                >
+                  Save
+                </Button>
+                {isNew ? (
+                  <Button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="flex-1"
+                    onClick={() => form.setFieldValue('see_later', true)}
+                  >
+                    <HourglassMediumIcon size={18} weight="duotone" /> See later
+                  </Button>
+                ) : null}
+              </Flex>
               <Button
                 variant="ghost"
                 type="button"

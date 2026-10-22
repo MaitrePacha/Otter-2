@@ -20,6 +20,10 @@ export type UIStateAction =
   | { type: 'settings_types_visible'; payload: boolean }
   | { type: 'settings_collections_visible'; payload: boolean }
   | { type: 'settings_group_by_date'; payload: boolean }
+  | {
+      type: 'settings_hidden_sections'
+      payload: UserProfile['settings_hidden_sections']
+    }
   | { type: 'settings_top_tags_count'; payload: number | null }
   | { type: 'settings_pinned_tags'; payload: string[] }
 

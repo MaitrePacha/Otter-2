@@ -63,6 +63,20 @@
       "when": 1791586437221,
       "tag": "0008_check_url_key",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1792539243910,
+      "tag": "0009_hidden_sections",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1792596463380,
+      "tag": "0010_see_later",
+      "breakpoints": true
     }
   ],
   "version": "7"

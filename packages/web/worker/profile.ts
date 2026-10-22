@@ -3,6 +3,7 @@ import type { Context } from 'hono'
 import { z } from 'zod'
 import { profiles } from '../db/schema'
 import { API_HEADERS } from '../src/constants'
+import { SIDEBAR_SECTIONS } from '../src/types/db'
 import { errorResponse } from '../src/utils/fetching/errorResponse'
 import { getErrorMessage } from '../src/utils/get-error-message'
 import { getProfileById, requireRequestContext } from './context'
@@ -30,6 +31,10 @@ const updateProfileSchema = z.discriminatedUnion('column', [
   }),
   z.object({ column: z.literal('settings_group_by_date'), value: z.boolean() }),
   z.object({
+    column: z.literal('settings_hidden_sections'),
+    value: z.array(z.enum(SIDEBAR_SECTIONS)),
+  }),
+  z.object({
     column: z.literal('settings_top_tags_count'),
     value: z.number().nullable(),
   }),
@@ -49,6 +54,8 @@ const getProfileUpdate = (update: z.infer<typeof updateProfileSchema>) => {
       return { settingsCollectionsVisible: update.value }
     case 'settings_group_by_date':
       return { settingsGroupByDate: update.value }
+    case 'settings_hidden_sections':
+      return { settingsHiddenSections: update.value }
     case 'settings_pinned_tags':
       return { settingsPinnedTags: update.value }
     case 'settings_tags_visible':

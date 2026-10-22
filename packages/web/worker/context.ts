@@ -34,6 +34,8 @@ export const profileToRow = (profile: Profile): UserProfile => ({
   id: profile.id,
   settings_collections_visible: profile.settingsCollectionsVisible,
   settings_group_by_date: profile.settingsGroupByDate,
+  settings_hidden_sections:
+    profile.settingsHiddenSections as UserProfile['settings_hidden_sections'],
   settings_pinned_tags: profile.settingsPinnedTags,
   settings_tags_visible: profile.settingsTagsVisible,
   settings_top_tags_count:

@@ -305,6 +305,10 @@ export const profiles = pgTable(
       .notNull()
       .default(false),
     settingsGroupByDate: boolean('settings_group_by_date').default(false),
+    settingsHiddenSections: text('settings_hidden_sections')
+      .array()
+      .notNull()
+      .default(sql`ARRAY[]::text[]`),
     settingsPinnedTags: text('settings_pinned_tags')
       .array()
       .notNull()
@@ -350,6 +354,8 @@ export const bookmarks = pgTable(
       (): SQL =>
         sql`setweight(to_tsvector('english', coalesce(${bookmarks.title}, '')), 'A') || setweight(to_tsvector('english', coalesce(${bookmarks.description}, '')), 'B') || setweight(to_tsvector('english', coalesce(${bookmarks.note}, '')), 'C')`,
     ),
+    // On the See later list
+    seeLater: boolean('see_later').notNull().default(false),
     star: boolean('star').notNull().default(false),
     status: bookmarkStatusEnum('status').notNull().default('active'),
     tags: text('tags').array(),
