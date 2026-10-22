@@ -7,4 +7,27 @@
     margin-left: -7px;
     margin-bottom: -8px;
   }
+
+  /* On phones the buttons wrap under the footer icons: keep them apart */
+  @media (max-width: 767px) {
+    margin-top: var(--space-2xs);
+  }
+}
+
+/* More and Edit stand out: brighter, bolder text, and the accent on
+   hover */
+.feed-item-actions .button-ghost {
+  gap: var(--space-3xs);
+  border-color: transparent;
+  border-radius: var(--radii-m);
+  color: var(--theme11);
+  font-weight: 500;
+  letter-spacing: normal;
+
+  &:hover,
+  &[data-state="open"] {
+    border-color: transparent;
+    background-color: var(--accent4);
+    color: var(--accent11);
+  }
 }
