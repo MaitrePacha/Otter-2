@@ -2,7 +2,18 @@
   position: relative;
   border-radius: var(--radii-m);
 
-  &:hover {
+  /* Delete button, in place of the count on the right */
+  .tagListItem-delete {
+    position: absolute;
+    top: 50%;
+    right: 4px;
+    display: none;
+    transform: translateY(-50%);
+    z-index: 1;
+  }
+
+  &:hover,
+  &.is-armed {
     background-color: var(--theme3);
 
     .icon {
@@ -11,5 +22,16 @@
     .icon-button-taglist {
       display: inline-flex;
     }
+    .text-count {
+      visibility: hidden;
+    }
+    .tagListItem-delete {
+      display: inline-flex;
+    }
+  }
+
+  &.is-armed .tagListItem-delete {
+    color: var(--accent11);
+    background-color: transparent;
   }
 }
